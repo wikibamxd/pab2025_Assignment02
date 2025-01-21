@@ -8,13 +8,13 @@ def arg_parse():
     parser = argparse.ArgumentParser(
                     prog = "Assignment_02", 
                     description = "Calculates the density of variants within specified genomic features")
-    parser.add_argument("-gff", required=True, help="Input GFF file")
-    parser.add_argument("-vcf", required=True, help="Input VCF file")
-    parser.add_argument("-var", required=True, help="Output filtered VCF file")
-    parser.add_argument("-rep", required=True, help="Output report YAML file")
-    parser.add_argument("-ftr", required=True, help="Feature(s) type to analyze (e.g., exon,CDS)")
-    return parser.parse_args()
-
+    parser.add_argument("--gff", "-gff", required=True, help="Input GFF file")
+    parser.add_argument("--vcf", "-vcf", required=True, help="Input VCF file")
+    parser.add_argument("--var", "-var", required=True, help="Output filtered VCF file")
+    parser.add_argument("--rep", "-rep", required=True, help="Output report YAML file")
+    parser.add_argument("--ftr", "-ftr", required=True, help="Feature(s) type to analyze (e.g., exon,CDS)")
+    args = parser.parse_args()
+    return args
 class file_reading:
     """
     A class to everything that is input
@@ -27,6 +27,7 @@ class file_reading:
         """
         A method to read the GFF file
         """
+        #Seqname Source Feature Start End Score Strand Frame Attribute
         features = []
         try:
             with open(self.gff_file) as file1:
@@ -53,6 +54,7 @@ class file_reading:
         """
         A method to read the VCF file
         """
+        #CHROM POS   ID    REF  ALT   QUAL FILTER INFO
         variants = []
         try:
             with open(self.vcf_file) as file2:
@@ -88,3 +90,4 @@ class file_reading:
         A method to calculate the density  
         densidade vai ser o numero de posição final - inicial, depois vês quantas variantes tens e divides pela diferença e multiplicar por 1000
         """
+arg_parse()
