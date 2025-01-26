@@ -1,5 +1,4 @@
 import argparse
-import yaml
 def arg_parse():
     """
     Add arguments as inputs for GFF and VCF files
@@ -18,7 +17,8 @@ def arg_parse():
 
 class file_reading:
     """
-    
+    Take gff and vcf files as input and returns .vcf and .yml files as output
+    Select the type of feature to search
     """
     def __init__(self, gff_file, vcf_file, ftr_type):
         self.gff_file = gff_file
@@ -113,20 +113,22 @@ class file_reading:
             file3.write("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
             for variant in filtered_variants:
                 file3.write(f"{variant['chrom']}\t{variant['pos']}\t{variant['id']}\t{variant['ref']}\t{variant['alt']}\t{variant['qual']}\t{variant['filter']}\t{variant['info']}\n")
-    def density_report(self, density_value, yaml_output, filtered_variants, features):
+
+    def density_report(self, density_value, features, filtered_variants, output_report):
         """
-        A method to build the density report in Yaml format
+        A method to print the density report
         """
-        report = {
-        "Filtering report": {
-            "Feature_Type": ", ".join(self.ftr_type),
-            "TotalFeatures": len(features),    
-            "TotalVariants": len(filtered_variants),
-            "VariantsPerFeature": density_value
-        }
-    }
-        with open(yaml_output, "w") as file4:
-            yaml.dump(report, file4)
+        with open(output_report, "w") as file4:
+            file4.write("FilteringReport:\n")
+            file4.write(f"  Feature_Type: {', '.join(self.ftr_type)}\n")
+            file4.write(f"  TotalFeatures: {len(features)}\n")
+            file4.write(f"  TotalVariants: {len(filtered_variants)}\n")
+            file4.write(f"  VariantsPerFeature:\n")
+            for den_values in density_value:
+                file4.write(f"    - Feature ID: {den_values['FeatureID']}\n")
+                file4.write(f"      Length: {den_values['Length']}\n")
+                file4.write(f"      Variant Count: {den_values['VariantCount']}\n")
+                file4.write(f"      Density: {den_values['Density']}\n")
 
 def main():
     args = arg_parse()
@@ -138,7 +140,8 @@ def main():
     density_value = reader.calculate_density(features, filtered_variants)
     
     reader.variants_report(filtered_variants, args.var)
-    reader.density_report(density_value, args.rep, filtered_variants, features)
+    reader.density_report(density_value, features, filtered_variants, args.rep)
     
 if __name__ == "__main__":
     main()
+        
